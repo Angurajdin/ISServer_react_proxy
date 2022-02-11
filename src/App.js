@@ -1,26 +1,82 @@
 import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
-import AddProxyServer from './Components/AddProxyServer';
 import './App.css';
+import AddProxyServer from './Components/ProxyServer/AddProxyServer';
+import Proxy from './Components/ProxyServer/ProxyServer';
+import EditProxyServer from './Components/ProxyServer/EditProxyServer';
+import AddRemoteServer from './Components/RemoteServer/AddRemoteServer';
+import Remote from './Components/RemoteServer/RemoteServer';
+import EditRemoteServer from './Components/RemoteServer/EditRemoteServer';
+import SFTP from './Components/SFTP/SFTP';
+import AddSFTP from './Components/SFTP/AddSFTP';
+import EditSFTP from './Components/SFTP/EditSFTP';
 import Home from './Components/Home';
+import License from './Components/Server/Licensing/License';
+import Statistics from './Components/Server/Statistics/Statistics';
+import LicenseDetails from './Components/Server/Licensing/LicenseDetails';
+import Overview from './Components/Dashboard/Overview';
+
 
 
 function App() {
+
   return (
-    <Router>
-      <Switch>
-        {/* <Route exact path={["/", "/signup"]}> */}
-        <Route exact path="/">
-          <Home/>
-        </Route>
-        <Route exact path="/addProxy">
-          <AddProxyServer/>
-        </Route>
-        <Route path="*">
-          <h2>404, Page not found</h2>
-          <Link to="/">Back to Login Page</Link>
-        </Route>
-      </Switch>
-    </Router>
+    <div>
+      <Router>
+        <Switch>
+          {/* <Route exact path={["/", "/signup"]}> */}
+          <Route exact path="/">
+            <Overview/>
+          </Route>
+
+          <Route exact path="/proxyServer/">
+            <Proxy/>
+          </Route>
+          <Route exact path="/proxyServer/addProxy">
+            <AddProxyServer/>
+          </Route>
+          <Route exact path="/proxyServer/editProxy">
+            <EditProxyServer/>
+          </Route>
+          
+          <Route exact path="/remoteServer/">
+            <Remote/>
+          </Route>
+          <Route exact path="/remoteServer/addRemote">
+            <AddRemoteServer/>
+          </Route>
+          <Route exact path="/remoteServer/editRemote">
+            <EditRemoteServer/>
+          </Route>
+          
+          <Route exact path="/SFTP/">
+            <SFTP/>
+          </Route>
+          <Route exact path="/SFTP/addSFTP">
+            <AddSFTP/>
+          </Route>
+          <Route exact path="/SFTP/editSFTP">
+            <EditSFTP/>
+          </Route>
+
+          <Route exact path="/server/license/">
+            <License/>
+          </Route>
+          <Route exact path="/server/licenseDetails/">
+            <LicenseDetails/>
+          </Route>
+          <Route exact path="/server/statistics">
+            <Statistics/>
+          </Route>
+          
+          
+          <Route path="*">
+            <h2>404, Page not found</h2>
+            <Link to="/">Back to Login Page</Link>
+          </Route>
+        </Switch>
+      </Router>
+    </div>
+    
   );
 }
 
