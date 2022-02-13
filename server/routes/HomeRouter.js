@@ -20,6 +20,24 @@ router.get("/dashboard/overview", async(req, res) =>{
     res.send(err);
   }
 })
+
+router.get("/statistics", async(req, res) =>{
+  try{
+    const resultData = await axios.get(
+      "http://localhost:5555/admin/monitor/service",
+      {
+        auth: {
+          "username": "Administrator",
+          "password": "manage"
+        }
+      },
+    );
+    res.send(resultData);
+  } catch(err){
+    console.log("error");
+    res.send(err);
+  }
+})
  
 router.get("/getProxy", async (req, res) => {
     try {
