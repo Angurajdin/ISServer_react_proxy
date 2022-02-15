@@ -21,24 +21,10 @@ router.get("/dashboard/overview", async(req, res) =>{
   }
 })
 
-router.get("/statistics", async(req, res) =>{
-  try{
-    const resultData = await axios.get(
-      "http://localhost:5555/admin/monitor/service",
-      {
-        auth: {
-          "username": "Administrator",
-          "password": "manage"
-        }
-      },
-    );
-    res.send(resultData);
-  } catch(err){
-    console.log("error");
-    res.send(err);
-  }
-})
- 
+
+
+
+
 router.get("/getProxy", async (req, res) => {
     try {
       const resultData = await axios.get(
@@ -116,6 +102,47 @@ router.post("/deleteProxy", async (req, res) => {
       );
       
     res.send(resultData.data);
+  }
+  catch (err) {
+    console.log("error");
+    console.log(err);
+  }
+})
+
+
+
+router.get("/getSftpServer", async (req, res) => {
+  try {
+    const resultData = await axios.get(
+        "http://localhost:5555/admin/sftpserver?expand=true",
+        {
+          auth: {
+            "username": "Administrator",
+            "password": "manage"
+          }
+        },
+      );
+    res.status(200).send(resultData.data);
+  }
+  catch (err) {
+    console.log("error");
+    console.log(err);
+  }
+})
+
+router.post("/deleteSFTP", async (req, res) => {
+  try {
+    const resultData = await axios.delete(
+      "http://localhost:5555/admin/sftpserver/"+req.body.SFTPAlias,
+        {
+          auth: {
+            "username": "Administrator",
+            "password": "manage"
+          }
+        },
+      );
+      
+    res.status(200).send({data: "success"});
   }
   catch (err) {
     console.log("error");
@@ -235,6 +262,7 @@ router.post("/deleteRemote", async (req, res) => {
 })
 
 
+
 router.get("/license", async(req, res) => {
   try{
     const resultData = await axios.get(
@@ -254,5 +282,22 @@ router.get("/license", async(req, res) => {
   }
 })
 
+router.get("/statistics", async(req, res) =>{
+  try{
+    const resultData = await axios.get(
+      "http://localhost:5555/admin/monitor/service",
+      {
+        auth: {
+          "username": "Administrator",
+          "password": "manage"
+        }
+      },
+    );
+    res.send(resultData);
+  } catch(err){
+    console.log("error");
+    res.send(err);
+  }
+})
 
 module.exports = router;

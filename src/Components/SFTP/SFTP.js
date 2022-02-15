@@ -29,7 +29,7 @@ import Typography from '@mui/material/Typography';
 
 export default function SFTP() {
   const [rows, setRows] = useState([]);
-  const [currentDeletingProxy, setCurrentDeletingProxy] = React.useState('');
+  const [currentDeletingSFTP, setcurrentDeletingSFTP] = React.useState('');
   const history = useHistory(); 
   const [openDialog, setOpenDialog] = React.useState(false);
   const [showSnackbar, setShowSnackbar] = useState(false);
@@ -45,61 +45,37 @@ export default function SFTP() {
   };
 
   useEffect(async()=>{
-    // await Axios(
-    //   "http://localhost:5000/api/getProxy", {
-    //   method: 'GET',
-    // }).then((result)=>{
-    //   let server = [];
-    //   for(let row of result.data.proxies){
-    //     server.push(row);
-    //   }
-    //   setRows(server);
-    // })
-    // try {
-    //   await Axios(
-    //       "http://localhost:5555/admin/proxy?expand=true",{
-    //         method: "GET",
-    //         auth: {
-    //           "username": "Administrator",
-    //           "password": "manage"
-    //         },
-    //         headers:{
-    //           "Access-Control-Allow-Origin": "*"
-    //         }
-    //       }
-    //     ).then((result)=>{
-    //         let server = [];
-    //         for(let row of result.data.proxies){
-    //           server.push(row);
-    //         }
-    //         // console.log(server);
-    //         setRows(server);
-    //       })
-    // }
-    // catch (err) {
-    //   console.log("error");
-    //   console.log(err);
-    // }
+    await Axios(
+      "http://localhost:5000/api/getSftpServer", {
+      method: 'GET',
+    }).then((result)=>{
+      console.log(result.data.sftpServerAliases);
+      let server = [];
+      for(let row of result.data.sftpServerAliases){
+        server.push(row);
+      }
+      setRows(server);
+    })
   }, []);
   
 
-  const deleteRemote = async() =>{
+  const deleteSFTP = async() =>{
     await Axios.post(
-      "http://localhost:5000/api/deleteProxy",
-      { "proxyAlias": currentDeletingProxy }
+      "http://localhost:5000/api/deleteSFTP",
+      { "SFTPAlias": currentDeletingSFTP }
     ).then(async(result)=>{
       if(result.status===200){
         setShowSnackbar(true);
-        setSnackbarMessage(`${currentDeletingProxy} Proxy Server Alias was Deleted Successfully!`);
+        setSnackbarMessage(`${currentDeletingSFTP} SFTP Server Alias was Deleted Successfully!`);
         setSnackbarSeverity("info");
         setTimeout(()=>{
           setShowSnackbar(false);
         }, 5000);
         await Axios.get(
-          "http://localhost:5000/api/getProxy"
+          "http://localhost:5000/api/getSftpServer"
         ).then((result)=>{
           let server = [];
-          for(let row of result.data.proxies){
+          for(let row of result.data.sftpServerAliases){
             server.push(row);
           }
           // console.log(server);
@@ -113,9 +89,9 @@ export default function SFTP() {
     })
   }
 
-  const editProxy = async(row) =>{
+  const editSFTP = async(row) =>{
     history.push({
-      pathname: "/proxyServer/editProxy",
+      pathname: "/SFTP/editSFTP",
       state: {...row}
     })
   }
@@ -136,12 +112,12 @@ export default function SFTP() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-          OK to delete the proxy alias "{currentDeletingProxy}"?
+          OK to delete the SFTP alias "{currentDeletingSFTP}"?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={deleteRemote} autoFocus>
+          <Button onClick={deleteSFTP} autoFocus>
             OK
           </Button>
         </DialogActions>
@@ -156,49 +132,47 @@ export default function SFTP() {
         <div className="float-start">
           <p className="fw-bolder ps-1">SFTP Server List</p>
         </div>
-        {/* <div className="float-end">
-          <Link to="/proxyServer/addProxy">
+        <div className="float-end">
+          <Link to="/SFTP/addSFTP">
             <Button variant="contained" size='small' startIcon={<AddCircleOutlineIcon />}>
               New
             </Button>
           </Link>
-        </div> */}
+        </div>
       </div>
-      {/* <TableContainer component={Paper}>
+      <TableContainer component={Paper}>
         <Table aria-label="simple table">
           <TableHead>
             <TableRow sx={{ bgcolor: 'text.disabled' }}>
                 <TableCell size='small' sx={{ fontWeight: 'bold' }}>Alias</TableCell>
-                <TableCell size='small' sx={{ fontWeight: 'bold' }}>Protocol</TableCell>
                 <TableCell size='small' sx={{ fontWeight: 'bold' }}>Host</TableCell>
                 <TableCell size='small' sx={{ fontWeight: 'bold' }}>Port</TableCell>
-                <TableCell size='small' sx={{ fontWeight: 'bold' }}>User</TableCell>
-                <TableCell size='small' sx={{ fontWeight: 'bold' }}>Enabled</TableCell>
+                <TableCell size='small' sx={{ fontWeight: 'bold' }}>Proxy Alias</TableCell>
+                <TableCell size='small' sx={{ fontWeight: 'bold' }}>Host Key Fingerprint</TableCell>
                 <TableCell size='small' sx={{ fontWeight: 'bold' }}>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             { rows.length === 0 ? 
-            <TableRow><TableCell align="center" colSpan={7}>No Proxy Server is created yet!</TableCell></TableRow> : 
+            <TableRow><TableCell align="center" colSpan={7}>No SFTP Server is created yet!</TableCell></TableRow> : 
             rows.map((row) => (
               <TableRow
-                key={row.proxyAlias}
+                key={row.alias}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <TableCell size='small'>{row.proxyAlias}</TableCell>
-                <TableCell size='small'>{row.protocol}</TableCell>
-                <TableCell size='small'>{row.host}</TableCell>
+                <TableCell size='small'>{row.alias}</TableCell>
+                <TableCell size='small'>{row.hostName}</TableCell>
                 <TableCell size='small'>{row.port}</TableCell>
-                <TableCell size='small'>{row.username}</TableCell>
-                <TableCell size='small'>{row.status==="Enabled" ? "Yes" : "No"}</TableCell>
+                <TableCell size='small'>{row.proxyAlias===null ? "Null" : row.proxyAlias}</TableCell>
+                <TableCell size='small'>{row.fingerprint}</TableCell>
                 <TableCell size='small'>
                   <Tooltip title="Edit">
-                    <IconButton onClick={()=>{ editProxy(row) }} aria-label="edit" size="small" color='primary'>
+                    <IconButton onClick={()=>{ editSFTP(row) }} aria-label="edit" size="small" color='primary'>
                       <EditIcon fontSize="inherit"/>
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Delete">
-                    <IconButton onClick={()=>{handleClickOpen(); setCurrentDeletingProxy(row.proxyAlias);}} aria-label="delete" size="small" color='error'>
+                    <IconButton onClick={()=>{handleClickOpen(); setcurrentDeletingSFTP(row.alias);}} aria-label="delete" size="small" color='error'>
                       <DeleteIcon fontSize="inherit"/>
                     </IconButton>
                   </Tooltip>
@@ -207,7 +181,7 @@ export default function SFTP() {
             ))}
           </TableBody>
         </Table>
-      </TableContainer> */}
+      </TableContainer>
     </div>
     </div>
   );
