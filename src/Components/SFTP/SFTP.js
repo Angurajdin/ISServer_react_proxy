@@ -35,6 +35,7 @@ export default function SFTP() {
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('');
+  const [proxyServers, setProxyServers] = React.useState([]);
 
   const handleClickOpen = () => {
     setOpenDialog(true);
@@ -56,6 +57,17 @@ export default function SFTP() {
       }
       setRows(server);
     })
+
+    await Axios(
+      "http://localhost:5000/api/getProxy", {
+      method: 'GET',
+      }).then((result) => {
+          let server = [];
+          for (let row of result.data.proxies) {
+              server.push(row.proxyAlias);
+          }
+          setProxyServers(server);
+      })
   }, []);
   
 
@@ -92,7 +104,7 @@ export default function SFTP() {
   const editSFTP = async(row) =>{
     history.push({
       pathname: "/SFTP/editSFTP",
-      state: {...row}
+      state: {...row, "proxyServers": proxyServers}
     })
   }
 

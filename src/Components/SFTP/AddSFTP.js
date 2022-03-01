@@ -19,20 +19,29 @@ import TransferList from '../TransderList';
 import { useCallback } from 'react';
 import Divider from '@mui/material/Divider';
 import { Breadcrumbs } from '@mui/material';
+import SaveIcon from '@mui/icons-material/Save';
+
 
 const AddSFTP = () => {
 
-    const keyExchangeAlgorithmsValues = ["diffie-hellman-group-exchange-sha256", "curve25519-sha256@libssh.org", "diffie-hellman-group18-sha512", "diffie-hellman-group17-sha512", "diffie-hellman-group16-sha512", "diffie-hellman-group15-sha512", "diffie-hellman-group14-sha256",
+    const keyExchangeAlgorithmsValuesv2 = ["diffie-hellman-group-exchange-sha256", "curve25519-sha256@libssh.org", "diffie-hellman-group18-sha512", "diffie-hellman-group17-sha512", "diffie-hellman-group16-sha512", "diffie-hellman-group15-sha512", "diffie-hellman-group14-sha256",
     "diffie-hellman-group-exchange-sha1", "diffie-hellman-group14-sha1", "ecdh-sha2-nistp256", "ecdh-sha2-nistp384", "ecdh-sha2-nistp521",
     "diffie-hellman-group1-sha1", "rsa2048-sha256", "rsa1024-sha1"];
 
-    const MACAlgorithmsS2CValues = ["hmac-sha2-256", "hmac-sha256","hmac-sha256@ssh.com","hmac-sha2-256-etm@openssh.com","hmac-sha2-256-96",
+    const MACAlgorithmsS2CValuesv2 = ["hmac-sha2-256", "hmac-sha256","hmac-sha256@ssh.com","hmac-sha2-256-etm@openssh.com","hmac-sha2-256-96",
     "hmac-sha512","hmac-sha2-512","hmac-sha512@ssh.com","hmac-sha2-512-etm@openssh.com","hmac-sha2-512-96", "hmac-sha1", "hmac-sha1-etm@openssh.com", 
     "hmac-sha1-96", "hmac-ripemd160", "hmac-ripemd160@openssh.com", "hmac-ripemd160-etm@openssh.com", "hmac-md5", "hmac-md5-etm@openssh.com", "hmac-md5-96"];
     
-    const MACAlgorithmsC2SValues = ["hmac-sha2-256", "hmac-sha256","hmac-sha256@ssh.com","hmac-sha2-256-etm@openssh.com","hmac-sha2-256-96",
+    const MACAlgorithmsC2SValuesv2 = ["hmac-sha2-256", "hmac-sha256","hmac-sha256@ssh.com","hmac-sha2-256-etm@openssh.com","hmac-sha2-256-96",
     "hmac-sha512","hmac-sha2-512","hmac-sha512@ssh.com","hmac-sha2-512-etm@openssh.com","hmac-sha2-512-96", "hmac-sha1", "hmac-sha1-etm@openssh.com", 
     "hmac-sha1-96", "hmac-ripemd160", "hmac-ripemd160@openssh.com", "hmac-ripemd160-etm@openssh.com", "hmac-md5", "hmac-md5-etm@openssh.com", "hmac-md5-96"];
+
+    const keyExchangeAlgorithmsValuesv1 = ["ecdh-sha2-nistp256", "ecdh-sha2-nistp384", "ecdh-sha2-nistp521",
+    "diffie-hellman-group14-sha1","diffie-hellman-group-exchange-sha256","diffie-hellman-group-exchange-sha1","diffie-hellman-group1-sha1"];
+    const MACAlgorithmsS2CValuesv1 = ["hmac-md5","hmac-sha1","hmac-sha2-256","hmac-sha1-96", "hmac-md5-96"];
+    const MACAlgorithmsC2SValuesv1 = ["hmac-md5","hmac-sha1","hmac-sha2-256","hmac-sha1-96", "hmac-md5-96"];
+
+
 
     const CiphersS2CValues = ["aes128-ctr","aes192-ctr","aes256-ctr","3des-ctr","3des-cbc","blowfish-cbc","aes128-cbc","aes192-cbc","aes256-cbc","arcfour",
     "arcfour128", "arcfour256", "aes128-gcm@openssh.com", "aes256-gcm@openssh.com"];
@@ -51,13 +60,14 @@ const AddSFTP = () => {
     const [maxDHKeySize, setMaxDHKeySize] = React.useState('8192');
     const [minDHKeySize, setMinDHKeySize] = React.useState('1024');
     const [loading, setLoading] = React.useState(false);
+    const [loadingSubmit, setLoadingSubmit] = React.useState(false);
     const history = useHistory();
 
-    const [keyExchangeAlgorithms, setKeyExchangeAlgorithms] = React.useState([]);
-    const [MACAlgorithmsS2C, setMACAlgorithmsS2C] = React.useState([]);
-    const [MACAlgorithmsC2S, setMACAlgorithmsC2S] = React.useState([]);
-    const [CiphersS2C, setCiphersS2C] = React.useState([]);
-    const [CiphersC2S, setCiphersC2S] = React.useState([]);
+    const [keyExchangeAlgorithms, setKeyExchangeAlgorithms] = React.useState(keyExchangeAlgorithmsValuesv2);
+    const [MACAlgorithmsS2C, setMACAlgorithmsS2C] = React.useState(MACAlgorithmsS2CValuesv2);
+    const [MACAlgorithmsC2S, setMACAlgorithmsC2S] = React.useState(MACAlgorithmsC2SValuesv2);
+    const [CiphersS2C, setCiphersS2C] = React.useState(CiphersS2CValues);
+    const [CiphersC2S, setCiphersC2S] = React.useState(CiphersC2SValues);
    
 
     React.useEffect(async () => {
@@ -83,6 +93,15 @@ const AddSFTP = () => {
 
     const handleChange = (event) => {
         setSelectedValue(event.target.value);
+        if(event.target.value==="v1"){
+            setKeyExchangeAlgorithms(keyExchangeAlgorithmsValuesv1);
+            setMACAlgorithmsS2C(MACAlgorithmsS2CValuesv1);
+            setMACAlgorithmsC2S(MACAlgorithmsC2SValuesv1);
+        } else{
+            setKeyExchangeAlgorithms(keyExchangeAlgorithmsValuesv2);
+            setMACAlgorithmsS2C(MACAlgorithmsS2CValuesv2);
+            setMACAlgorithmsC2S(MACAlgorithmsC2SValuesv2);
+        }
     };
 
     function getHostKey() {
@@ -91,18 +110,32 @@ const AddSFTP = () => {
 
     const createSFTPServer = async () => {
         try {
+            setLoadingSubmit(true);
+            let SFTPServer = {
+                "alias": alias,
+                "version": selectedValue,
+                "hostName": host,
+                "port": Number(port)
+            };
+
+            if(selectedValue === "v2"){
+                SFTPServer["minDHKeySize"] = Number(minDHKeySize);
+                SFTPServer["maxDHKeySize"] = Number(maxDHKeySize);
+            }
+            if(keyExchangeAlgorithms.length > 0)    SFTPServer["preferredKeyExchangeAlgorithm"] = keyExchangeAlgorithms;
+            if(MACAlgorithmsS2C.length > 0)         SFTPServer["preferredMACS2C"] = MACAlgorithmsS2C;
+            if(MACAlgorithmsC2S.length > 0)         SFTPServer["preferredMACC2S"] = MACAlgorithmsC2S;
+            if(CiphersS2C.length > 0)               SFTPServer["preferredCiphersS2C"] = CiphersS2C;
+            if(CiphersC2S.length > 0)               SFTPServer["preferredCiphersC2S"] = CiphersC2S;
+
             await Axios.post(
-                "http://localhost:5000/api/createProxy",
-                {
-                    "proxyAlias": alias,
-                    "host": host,
-                    "port": Number(port),
-                    "isDefault": selectedValue === "no" ? false : true
-                }
+                "http://localhost:5000/api/createSFTP",
+                SFTPServer
             ).then((result) => {
                 console.log(result);
+                setLoadingSubmit(false);
                 if (result.status === 200) {
-                    history.push("/proxyServer/");
+                    history.push("/SFTP/");
                 }
             })
         }
@@ -246,7 +279,7 @@ const AddSFTP = () => {
                             SFTP Server Alias Advanced Settings (Optional)
                         </Typography>
 
-                        { selectedValue==="v2" &&
+                        { selectedValue==="v2" && 
                             <div>
                                 <TextField
                                     required
@@ -267,22 +300,43 @@ const AddSFTP = () => {
                                     }}
                                     size="small"
                                 /><br />
+                                <TransferList getValue={getKeyExchangeAlgorithms} left={keyExchangeAlgorithmsValuesv2} right={[]} title=" Key Exchange Algorithms" />
+
+                                <TransferList getValue={getMACAlgorithmsS2C} left={MACAlgorithmsS2CValuesv2} right={[]} title=" MAC Algorithms S2C" />
+
+                                <TransferList getValue={getMACAlgorithmsC2S} left={MACAlgorithmsC2SValuesv2} right={[]} title=" MAC Algorithms C2S" />
+                                
+                                <TransferList getValue={getCiphersS2C} left={CiphersS2CValues} right={[]} title=" Ciphers S2C" />
+                                <TransferList getValue={getCiphersC2S} left={CiphersC2SValues} right={[]} title=" Ciphers C2S" />
+
                             </div>
                         }
 
-                        <TransferList getValue={getKeyExchangeAlgorithms} left={keyExchangeAlgorithmsValues} right={[]} title=" Key Exchange Algorithms" />
-
-                        <TransferList getValue={getMACAlgorithmsS2C} left={MACAlgorithmsS2CValues} right={[]} title=" MAC Algorithms S2C" />
-
-                        <TransferList getValue={getMACAlgorithmsC2S} left={MACAlgorithmsC2SValues} right={[]} title=" MAC Algorithms C2S" />
-
-                        <TransferList getValue={getCiphersS2C} left={CiphersS2CValues} right={[]} title=" Ciphers S2C" />
-
-                        <TransferList getValue={getCiphersC2S} left={CiphersC2SValues} right={[]} title=" Ciphers C2S" />
-
+                        {
+                            selectedValue==='v1' && 
+                            <div>
+                                <TransferList getValue={getKeyExchangeAlgorithms} left={keyExchangeAlgorithmsValuesv1} right={[]} title=" Key Exchange Algorithms" />
+                                <TransferList getValue={getMACAlgorithmsS2C} left={MACAlgorithmsS2CValuesv1} right={[]} title=" MAC Algorithms S2C" />
+                                <TransferList getValue={getMACAlgorithmsC2S} left={MACAlgorithmsC2SValuesv1} right={[]} title=" MAC Algorithms C2S" />
+                                <TransferList getValue={getCiphersS2C} left={CiphersS2CValues} right={[]} title=" Ciphers S2C" />
+                                <TransferList getValue={getCiphersC2S} left={CiphersC2SValues} right={[]} title=" Ciphers C2S" />
+                            </div>
+                        }
 
                         <Box sx={{ pl: 5, py: 5 }}>
-                            <Button color="primary" onClick={createSFTPServer} style={{ textTransform: 'none' }} variant="contained">Save Changes</Button>
+                            <LoadingButton
+                                style={{ textTransform: 'none' }}
+                                sx={{ px: 1, pl: 2 }}
+                                color="primary"
+                                onClick={createSFTPServer}
+                                loading={loadingSubmit}
+                                // size="small"
+                                loadingPosition="start"
+                                startIcon={<SaveIcon />}
+                                variant="contained"
+                            >
+                                Save Changes
+                            </LoadingButton>
                             &emsp;
                             <Button color="error" onClick={() => { history.goBack(); }} style={{ textTransform: 'none' }} variant="contained">Back</Button>
                         </Box>

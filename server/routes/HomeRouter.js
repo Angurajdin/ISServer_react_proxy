@@ -2,6 +2,7 @@
 var express = require('express');
 var router = express.Router();
 const axios = require("axios");
+const { logDOM } = require('@testing-library/react');
 
 router.get("/dashboard/overview", async(req, res) =>{
   try{
@@ -46,8 +47,6 @@ router.get("/getProxy", async (req, res) => {
 
 router.post("/createProxy", async (req, res) => {
 
-  console.log(req.body);
-  
   try {
     const resultData = await axios.post(
       "http://localhost:5555/admin/proxy",
@@ -123,6 +122,52 @@ router.get("/getSftpServer", async (req, res) => {
         },
       );
     res.status(200).send(resultData.data);
+  }
+  catch (err) {
+    console.log("error");
+    console.log(err);
+  }
+})
+
+router.post("/createSFTP", async (req, res) => {
+  
+  try {
+    console.log(req.body);
+    const resultData = await axios.post(
+      "http://localhost:5555/admin/sftpserver",
+      req.body,
+        {
+          auth: {
+            "username": "Administrator",
+            "password": "manage"
+          }
+        },
+      );
+    // console.log(resultData);
+    res.send(resultData.data);
+  }
+  catch (err) {
+    console.log("error");
+    console.log(err);
+    res.send(err);
+  }
+})
+
+router.patch("/editSFTP", async (req, res) => {
+  
+  try {
+    const resultData = await axios.patch(
+      "http://localhost:5555/admin/sftpserver/"+req.body.alias,
+        req.body.formData,
+        {
+          auth: {
+            "username": "Administrator",
+            "password": "manage"
+          }
+        },
+      );
+      
+    res.send(resultData.data);
   }
   catch (err) {
     console.log("error");
@@ -296,6 +341,7 @@ router.get("/statistics", async(req, res) =>{
     res.send(resultData);
   } catch(err){
     console.log("error");
+    console.log(err);
     res.send(err);
   }
 })
