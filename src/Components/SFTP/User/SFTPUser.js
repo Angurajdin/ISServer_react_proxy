@@ -15,20 +15,22 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import { Link, useHistory } from 'react-router-dom';
-import Home from '../Home';
+import Home from '../../Home';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Snackbars from '../SnackBar';
+import Snackbars from '../../SnackBar';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Typography from '@mui/material/Typography';
-import LinkMui from '@mui/material/Link';
 import Box from '@mui/material/Box';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
-export default function SFTP() {
+
+export default function SFTPUser() {
   const [rows, setRows] = useState([]);
   const [currentDeletingSFTP, setcurrentDeletingSFTP] = React.useState('');
   const history = useHistory();
@@ -36,7 +38,9 @@ export default function SFTP() {
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('');
-  const [proxyServers, setProxyServers] = React.useState([]);
+  const [testing, setTesting] = React.useState(false);
+  const [testingAlias, setTestingAlias] = React.useState('');
+
 
   const handleClickOpen = () => {
     setOpenDialog(true);
@@ -48,46 +52,36 @@ export default function SFTP() {
 
   useEffect(async () => {
     await Axios(
-      "http://localhost:5000/api/getSftpServer", {
+      "http://localhost:5000/api/getSftpUser", {
       method: 'GET',
     }).then((result) => {
       let server = [];
-      for (let row of result.data.sftpServerAliases) {
+      console.log(result.data.sftpUserAliases);
+      for (let row of result.data.sftpUserAliases) {
         server.push(row);
       }
       setRows(server);
     })
-
-    await Axios(
-      "http://localhost:5000/api/getProxy", {
-      method: 'GET',
-    }).then((result) => {
-      let server = [];
-      for (let row of result.data.proxies) {
-        server.push(row.proxyAlias);
-      }
-      setProxyServers(server);
-    })
   }, []);
 
 
-  const deleteSFTP = async () => {
+  const deleteSFTPUser = async () => {
     await Axios.post(
-      "http://localhost:5000/api/deleteSFTP",
+      "http://localhost:5000/api/deleteSFTPUser",
       { "SFTPAlias": currentDeletingSFTP }
     ).then(async (result) => {
       if (result.status === 200) {
         setShowSnackbar(true);
-        setSnackbarMessage(`${currentDeletingSFTP} SFTP Server Alias was Deleted Successfully!`);
+        setSnackbarMessage(`${currentDeletingSFTP} SFTP User Alias was Deleted Successfully!`);
         setSnackbarSeverity("info");
         setTimeout(() => {
           setShowSnackbar(false);
         }, 5000);
         await Axios.get(
-          "http://localhost:5000/api/getSftpServer"
+          "http://localhost:5000/api/getSftpUser"
         ).then((result) => {
           let server = [];
-          for (let row of result.data.sftpServerAliases) {
+          for (let row of result.data.sftpUserAliases) {
             server.push(row);
           }
           // console.log(server);
@@ -101,11 +95,42 @@ export default function SFTP() {
     })
   }
 
-  const editSFTP = async (row) => {
+  const editSFTPUser = async (row) => {
     history.push({
-      pathname: "/SFTP/editSFTP",
-      state: { ...row, "proxyServers": proxyServers }
+      pathname: "/SFTP/editSFTPUser",
+      state: row
     })
+  }
+
+  const testSFTPUserAlias = async (alias) => {
+    // setTestingAlias(alias);
+    // setTesting(true);
+    // await Axios.post(
+    //   "http://localhost:5000/api/testSFTPUserAlias",
+    //   { "alias": alias }
+    // ).then(async (result) => {
+    //   setTesting(false);
+    //   if (result.status === 200) {
+    //     if (result.data.status === 400) {
+    //       setShowSnackbar(true);
+    //       setSnackbarMessage(result.data.message);
+    //       setSnackbarSeverity("error");
+    //       setTimeout(() => {
+    //         setShowSnackbar(false);
+    //       }, 5000);
+    //     } else if (result.data.status === 200) {
+    //       setShowSnackbar(true);
+    //       setSnackbarMessage(result.data.message);
+    //       setSnackbarSeverity("success");
+    //       setTimeout(() => {
+    //         setShowSnackbar(false);
+    //       }, 5000);
+    //     }
+    //   }
+    //   else {
+    //     console.log(result);
+    //   }
+    // })
   }
 
   return (
@@ -124,12 +149,12 @@ export default function SFTP() {
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              OK to delete the SFTP alias "{currentDeletingSFTP}"?
+              OK to delete the SFTP User alias "{currentDeletingSFTP}"?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog}>Cancel</Button>
-            <Button onClick={deleteSFTP} autoFocus>
+            <Button onClick={deleteSFTPUser} autoFocus>
               OK
             </Button>
           </DialogActions>
@@ -140,22 +165,13 @@ export default function SFTP() {
           </Link>
           <Typography color="text.primary">SFTP</Typography>
         </Breadcrumbs>
-        <div className='mt-3'>
-        <Box sx={{ fontSize: 18, color: 'black' }}>
-          <Link to="/SFTP/addSFTPUser">
-            Create User Alias
-          </Link> <br/>
-          <Link to="/SFTP/UserAlias">
-            User Alias Settings
-          </Link>
-        </Box>
-        </div>
-        <div className="d-flex justify-content-between mt-3">
+        
+        <div className="d-flex justify-content-between mt-5">
           <div className="float-start">
-            <p className="fw-bolder ps-1">SFTP Server List</p>
+            <p className="fw-bolder ps-1">SFTP User Alias List</p>
           </div>
           <div className="float-end">
-            <Link to="/SFTP/addSFTP">
+            <Link to="/SFTP/addSFTPUser">
               <Button variant="contained" size='small' startIcon={<AddCircleOutlineIcon />}>
                 New
               </Button>
@@ -166,30 +182,42 @@ export default function SFTP() {
           <Table aria-label="simple table">
             <TableHead>
               <TableRow sx={{ bgcolor: 'text.disabled' }}>
-                <TableCell size='small' sx={{ fontWeight: 'bold' }}>Alias</TableCell>
-                <TableCell size='small' sx={{ fontWeight: 'bold' }}>Host</TableCell>
-                <TableCell size='small' sx={{ fontWeight: 'bold' }}>Port</TableCell>
-                <TableCell size='small' sx={{ fontWeight: 'bold' }}>Proxy Alias</TableCell>
-                <TableCell size='small' sx={{ fontWeight: 'bold' }}>Host Key Fingerprint</TableCell>
+                <TableCell size='small' sx={{ fontWeight: 'bold' }}>User Alias</TableCell>
+                <TableCell size='small' sx={{ fontWeight: 'bold' }}>Server Alias</TableCell>
+                <TableCell size='small' sx={{ fontWeight: 'bold' }}>User</TableCell>
+                <TableCell size='small' sx={{ fontWeight: 'bold' }}>Authentication Type</TableCell>
+                <TableCell size='small' sx={{ fontWeight: 'bold' }}>Test</TableCell>
                 <TableCell size='small' sx={{ fontWeight: 'bold' }}>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {rows.length === 0 ?
-                <TableRow><TableCell align="center" colSpan={7}>No SFTP Server is created yet!</TableCell></TableRow> :
+                <TableRow><TableCell align="center" colSpan={7}>No SFTP User is created yet!</TableCell></TableRow> :
                 rows.map((row) => (
                   <TableRow
                     key={row.alias}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell size='small'>{row.alias}</TableCell>
-                    <TableCell size='small'>{row.hostName}</TableCell>
-                    <TableCell size='small'>{row.port}</TableCell>
-                    <TableCell size='small'>{row.proxyAlias === null ? "Null" : row.proxyAlias}</TableCell>
-                    <TableCell size='small'>{row.fingerprint}</TableCell>
+                    <TableCell size='small'>{row.sftpServerAlias}</TableCell>
+                    <TableCell size='small'>{row.userName}</TableCell>
+                    <TableCell size='small'>{row.authenticationType}</TableCell>
+                    <TableCell size='small'>
+                      {
+                        testing === true && testingAlias === row.alias ?
+                          <Tooltip title="Loading">
+                            <CircularProgress size={25} />
+                          </Tooltip> :
+                          <Tooltip title="Test">
+                            <IconButton onClick={() => { testSFTPUserAlias(row.alias) }} aria-label="Test" size="small" color='primary'>
+                              <PlayArrowIcon fontSize="medium" />
+                            </IconButton>
+                          </Tooltip>
+                      }
+                    </TableCell>
                     <TableCell size='small'>
                       <Tooltip title="Edit">
-                        <IconButton onClick={() => { editSFTP(row) }} aria-label="edit" size="small" color='primary'>
+                        <IconButton onClick={() => { editSFTPUser(row) }} aria-label="edit" size="small" color='primary'>
                           <EditIcon fontSize="inherit" />
                         </IconButton>
                       </Tooltip>

@@ -8,18 +8,18 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 export default function Snackbars(props) {
   const [openSnackbar, setOpenSnackbar] = React.useState(true);
-//   const [severity, setSeverity] = React.useState('info');
-//   const [message, setMessage] = React.useState('');
+  // const [severity, setSeverity] = React.useState('info');
+  // const [message, setMessage] = React.useState('');
 
-//   React.useEffect(()=>{
-//       console.log(props, "props useeff");
-//     setSeverity(props.severity);
-//     setMessage(props.message);
-//   }, []);
+  // React.useEffect(()=>{
+  //     console.log(props, "props useeff");
+  //   setSeverity(props.severity);
+  //   setMessage(props.message);
+  // }, []);
 
-//   const handleSnackbarClick = () => {
-//     setOpenSnackbar(true);
-//   };
+  // const handleSnackbarClick = () => {
+  //   setOpenSnackbar(true);
+  // };
 
   const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -30,7 +30,7 @@ export default function Snackbars(props) {
 
   return (
       <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleSnackbarClose}>
-        <Alert onClose={handleSnackbarClose} severity={props.severity} sx={{ width: '100%' }}>
+        <Alert onClose={handleSnackbarClose} severity={props.severity==="" ? "info" : props.severity} sx={{ width: '100%' }}>
           {props.message}
         </Alert>
       </Snackbar>

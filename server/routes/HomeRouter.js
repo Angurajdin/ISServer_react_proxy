@@ -2,12 +2,12 @@
 var express = require('express');
 var router = express.Router();
 const axios = require("axios");
-const { logDOM } = require('@testing-library/react');
+
 
 router.get("/dashboard/overview", async(req, res) =>{
   try{
     const resultData = await axios.get(
-      "http://localhost:5555/admin/monitor/service",
+      "http://localhost:5555/admin/dashboard/current",
       {
         auth: {
           "username": "Administrator",
@@ -18,11 +18,10 @@ router.get("/dashboard/overview", async(req, res) =>{
     res.send(resultData);
   } catch(err){
     console.log("error");
+    console.log(err);
     res.send(err);
   }
 })
-
-
 
 
 
@@ -130,9 +129,7 @@ router.get("/getSftpServer", async (req, res) => {
 })
 
 router.post("/createSFTP", async (req, res) => {
-  
   try {
-    console.log(req.body);
     const resultData = await axios.post(
       "http://localhost:5555/admin/sftpserver",
       req.body,
@@ -195,6 +192,114 @@ router.post("/deleteSFTP", async (req, res) => {
   }
 })
 
+
+router.get("/getSftpUser", async (req, res) => {
+  try {
+    const resultData = await axios.get(
+        "http://localhost:5555/admin/sftpuser?expand=true",
+        {
+          auth: {
+            "username": "Administrator",
+            "password": "manage"
+          }
+        },
+      );
+    res.status(200).send(resultData.data);
+  }
+  catch (err) {
+    console.log("error");
+    console.log(err);
+  }
+})
+
+router.post("/createSFTPUser", async (req, res) => {
+  try {
+    const resultData = await axios.post(
+      "http://localhost:5555/admin/sftpuser",
+      req.body,
+        {
+          auth: {
+            "username": "Administrator",
+            "password": "manage"
+          }
+        },
+      );
+    // console.log(resultData);
+    res.send(resultData.data);
+  }
+  catch (err) {
+    console.log("error");
+    console.log(err);
+    res.send(err);
+  }
+})
+
+router.patch("/editSFTPUser", async (req, res) => {
+  
+  try {
+    const resultData = await axios.patch(
+      "http://localhost:5555/admin/sftpuser/"+req.body.alias,
+        req.body.formData,
+        {
+          auth: {
+            "username": "Administrator",
+            "password": "manage"
+          }
+        },
+      );
+      
+    res.send(resultData.data);
+  }
+  catch (err) {
+    console.log("error");
+    console.log(err);
+  }
+})
+
+router.post("/testSFTPUserAlias", async (req, res) => {
+  
+  // try {
+  //   const resultData = await axios.post(
+  //     "http://localhost:5555/admin/remoteserver/"+req.body.alias,
+  //     {
+  //       "action": "test"
+  //     },
+  //       {
+  //         auth: {
+  //           "username": "Administrator",
+  //           "password": "manage"
+  //         }
+  //       },
+  //     );
+  //   // console.log(resultData);
+  //   res.send(resultData.data);
+  // }
+  // catch (err) {
+  //   console.log("error");
+  //   console.log(err);
+  //   res.send(err);
+  // }
+})
+
+router.post("/deleteSFTPUser", async (req, res) => {
+  try {
+    const resultData = await axios.delete(
+      "http://localhost:5555/admin/sftpuser/"+req.body.SFTPAlias,
+        {
+          auth: {
+            "username": "Administrator",
+            "password": "manage"
+          }
+        },
+      );
+      
+    res.status(200).send({data: "success"});
+  }
+  catch (err) {
+    console.log("error");
+    console.log(err);
+  }
+})
 
 
 router.get("/getRemote", async (req, res) => {

@@ -14,6 +14,9 @@ import License from './Components/Server/Licensing/License';
 import Statistics from './Components/Server/Statistics/Statistics';
 import LicenseDetails from './Components/Server/Licensing/LicenseDetails';
 import Overview from './Components/Dashboard/Overview';
+import SFTPUser from './Components/SFTP/User/SFTPUser';
+import AddSFTPUser from './Components/SFTP/User/AddSFTPUser';
+import EditSFTPUser from './Components/SFTP/User/EditSFTPUser';
 
 
 
@@ -24,7 +27,7 @@ function App() {
       <Router>
         <Switch>
           {/* <Route exact path={["/", "/signup"]}> */}
-          <Route exact path="/">
+          <Route exact path={["/", "/dashboard"]}>
             <Overview/>
           </Route>
 
@@ -56,6 +59,16 @@ function App() {
           </Route>
           <Route exact path="/SFTP/editSFTP">
             <EditSFTP/>
+          </Route>
+
+          <Route exact path="/SFTP/UserAlias">
+            <SFTPUser/>
+          </Route>
+          <Route exact path="/SFTP/addSFTPUser">
+            <AddSFTPUser/>
+          </Route>
+          <Route exact path="/SFTP/editSFTPUser">
+            <EditSFTPUser/>
           </Route>
 
           <Route exact path="/server/license/">
